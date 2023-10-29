@@ -1,37 +1,32 @@
-import dayjs from "dayjs";
-import Link from "next/link";
-import { dbClient } from "@/services";
-import { Card } from "@/components/Card";
-import { CaseImage } from "@/components/CaseImage";
+import { HydrationBoundary, QueryClient, dehydrate } from "@tanstack/react-query";
 
-export default async function HomePage() {
-  const cases = await dbClient.from("case").select("*");
+import { getCases } from "@/services/database";
+import { CaseTable } from "@/components/CaseTable";
+import { dbServerClient } from "@/lib/database/server";
+
+const HomePage = async () => {
+  const queryClient = new QueryClient();
+
+  const cases = await queryClient.fetchQuery({
+    queryKey: ["cases"],
+    queryFn: getCases(dbServerClient),
+  });
+
+  if (!cases) {
+    return (
+      <div className="grid place-items-center min-h-[inherit]">
+        <div className="text-4xl">No cases found 😔</div>
+      </div>
+    );
+  }
 
   return (
-    <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,250px),1fr))] gap-4 p-4">
-      {cases.data?.map((item) => {
-        return (
-          <Link key={item.id} href={`/cases/${item.id}`}>
-            <Card className="grid gap-4 p-4 h-full cursor-pointer hover:shadow-2xl transition-shadow">
-              <div className="grid gap-1">
-                <h1 className="text-2xl">{item.label}</h1>
-                <span className="text-sm text-gray-500">
-                  Created at {dayjs(item.created_at).format("LL")}
-                </span>
-              </div>
-
-              <div className="w-full aspect-square relative">
-                <CaseImage
-                  fill
-                  className="shadow-md rounded object-cover"
-                  src={item.image}
-                  alt={item.label}
-                />
-              </div>
-            </Card>
-          </Link>
-        );
-      })}
-    </div>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <div className="p-4">
+        <CaseTable />
+      </div>
+    </HydrationBoundary>
   );
-}
+};
+
+export default HomePage;
