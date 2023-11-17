@@ -1,0 +1,56 @@
+diff --git a/node_modules/jdataview/dist/node/jdataview.js b/node_modules/jdataview/dist/node/jdataview.js
+index 36ec8fc..4bb3df5 100644
+--- a/node_modules/jdataview/dist/node/jdataview.js
++++ b/node_modules/jdataview/dist/node/jdataview.js
+@@ -1,5 +1,5 @@
+ !function(factory) {
+-    var global = this;
++    var global = globalThis;
+     module.exports = factory(global);
+ }(function(global) {
+     "use strict";
+@@ -28,7 +28,7 @@
+         this._engineAction = this._isDataView ? this._dataViewAction : this._isNodeBuffer ? this._nodeBufferAction : this._isArrayBuffer ? this._arrayBufferAction : this._arrayAction;
+     }
+     function getCharCodes(string) {
+-        if (compatibility.NodeBuffer) return new Buffer(string, "binary");
++        if (compatibility.NodeBuffer) return Buffer.from(string, "binary");
+         for (var Type = compatibility.ArrayBuffer ? Uint8Array : Array, codes = new Type(string.length), i = 0, length = string.length; length > i; i++) codes[i] = 255 & string.charCodeAt(i);
+         return codes;
+     }
+@@ -53,7 +53,7 @@
+         } catch (e) {
+             compatibility.NodeBuffer = !1;
+         }
+-    }(new Buffer(4));
++    }(Buffer.alloc(4));
+     var dataTypes = {
+         Int8: 1,
+         Int16: 2,
+@@ -67,7 +67,7 @@
+     jDataView.wrapBuffer = function(buffer) {
+         switch (typeof buffer) {
+           case "number":
+-            if (compatibility.NodeBuffer) buffer = new Buffer(buffer), buffer.fill(0); else if (compatibility.ArrayBuffer) buffer = new Uint8Array(buffer).buffer; else {
++            if (compatibility.NodeBuffer) buffer = Buffer.allow(buffer), buffer.fill(0); else if (compatibility.ArrayBuffer) buffer = new Uint8Array(buffer).buffer; else {
+                 buffer = new Array(buffer);
+                 for (var i = 0; i < buffer.length; i++) buffer[i] = 0;
+             }
+@@ -77,7 +77,7 @@
+             buffer = getCharCodes(buffer);
+ 
+           default:
+-            return "length" in buffer && !(compatibility.NodeBuffer && is(buffer, Buffer) || compatibility.ArrayBuffer && is(buffer, ArrayBuffer)) && (compatibility.NodeBuffer ? buffer = new Buffer(buffer) : compatibility.ArrayBuffer ? is(buffer, ArrayBuffer) || (buffer = new Uint8Array(buffer).buffer, 
++            return "length" in buffer && !(compatibility.NodeBuffer && is(buffer, Buffer) || compatibility.ArrayBuffer && is(buffer, ArrayBuffer)) && (compatibility.NodeBuffer ? buffer = Buffer.alloc(buffer) : compatibility.ArrayBuffer ? is(buffer, ArrayBuffer) || (buffer = new Uint8Array(buffer).buffer,
+             is(buffer, ArrayBuffer) || (buffer = new Uint8Array(arrayFrom(buffer, !0)).buffer)) : buffer = arrayFrom(buffer)),
+             buffer;
+         }
+@@ -148,7 +148,7 @@
+             if (0 !== length) {
+                 if (littleEndian = defined(littleEndian, this._littleEndian), byteOffset = defined(byteOffset, this._offset),
+                 this._checkBounds(byteOffset, length), !littleEndian && length > 1 && (bytes = arrayFrom(bytes, !0).reverse()),
+-                byteOffset += this.byteOffset, this._isArrayBuffer) new Uint8Array(this.buffer, byteOffset, length).set(bytes); else if (this._isNodeBuffer) new Buffer(bytes).copy(this.buffer, byteOffset); else for (var i = 0; length > i; i++) this.buffer[byteOffset + i] = bytes[i];
++                byteOffset += this.byteOffset, this._isArrayBuffer) new Uint8Array(this.buffer, byteOffset, length).set(bytes); else if (this._isNodeBuffer) Buffer.alloc(bytes).copy(this.buffer, byteOffset); else for (var i = 0; length > i; i++) this.buffer[byteOffset + i] = bytes[i];
+                 this._offset = byteOffset - this.byteOffset + length;
+             }
+         },

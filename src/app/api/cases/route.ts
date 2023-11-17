@@ -1,7 +1,7 @@
 import type { Tables } from "@/types/database";
 
-import { createCase } from "@/services/database";
 import { dbServerClient } from "@/lib/database/server";
+import { createCase } from "@/services/database/createCase";
 import { NextResponse, type NextRequest } from "next/server";
 
 type Case = Tables<"case">;

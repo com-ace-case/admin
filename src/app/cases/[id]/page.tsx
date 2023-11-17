@@ -1,12 +1,16 @@
 import type { PageProps } from "@/types/router";
 
 import type { FC } from "react";
+import { HydrationBoundary, QueryClient, dehydrate } from "@tanstack/react-query";
 
+import Link from "next/link";
 import { dayjs } from "@/lib/date";
-import { Card } from "@/components/Card";
-import { getCaseById } from "@/services/database";
+import { getSteamItems } from "@/lib/steam";
 import { CaseImage } from "@/components/CaseImage";
+import { SkinsTable } from "@/components/SkinsTable";
 import { dbServerClient } from "@/lib/database/server";
+import ArrowBackIcon from "@mui/icons-material/ArrowBackIos";
+import { getCaseById } from "@/services/database/getCaseById";
 
 interface CasePageParams {
   id: string;
@@ -23,26 +27,43 @@ const CasePage: FC<PageProps<CasePageParams>> = async ({ params }) => {
     );
   }
 
+  const queryClient = new QueryClient();
+
+  await queryClient.fetchInfiniteQuery({
+    initialPageParam: 0,
+    queryKey: ["skins/list"],
+    queryFn: () => getSteamItems(),
+  });
+
   return (
-    <div className="m-auto p-4">
-      <Card className="grid gap-4 p-4 w-[250px]">
-        <div className="grid gap-1">
-          <h1 className="text-2xl">{item.label}</h1>
-          <span className="text-sm text-gray-500">
-            Создано {dayjs(item.created_at).format("LL")}
-          </span>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <div className="grid gap-4 grid-rows-[auto,auto,1fr] p-4">
+        <div className="flex items-center w-full gap-2 border-0 border-b border-gray-300 border-solid">
+          <Link href="..">
+            <ArrowBackIcon className="cursor-pointer" />
+          </Link>
+
+          <h1 className="flex-1 text-2xl">{item.label}</h1>
         </div>
 
-        <div className="w-full aspect-square relative">
-          <CaseImage
-            fill
-            className="shadow-md rounded object-cover"
-            src={item.image}
-            alt={item.label}
-          />
+        <div className="grid grid-flow-col grid-cols-[auto,1fr] gap-4">
+          <div className="w-[300px] aspect-square relative">
+            <CaseImage
+              fill
+              className="object-cover rounded shadow-md"
+              src={item.image}
+              alt={item.label}
+            />
+          </div>
+
+          <span className="text">Создано {dayjs(item.created_at).format("LL")}</span>
         </div>
-      </Card>
-    </div>
+
+        <div className="grid">
+          <SkinsTable />
+        </div>
+      </div>
+    </HydrationBoundary>
   );
 };
 

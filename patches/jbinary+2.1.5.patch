@@ -1,0 +1,11 @@
+diff --git a/node_modules/jbinary/dist/node/jbinary.js b/node_modules/jbinary/dist/node/jbinary.js
+index 7718304..e03f3b4 100644
+--- a/node_modules/jbinary/dist/node/jbinary.js
++++ b/node_modules/jbinary/dist/node/jbinary.js
+@@ -1,5 +1,5 @@
+ !function(factory) {
+-    var global = this;
++    var global = globalThis;
+     module.exports = factory(global, require("jdataview"));
+ }(function(proto, jDataView) {
+     "use strict";

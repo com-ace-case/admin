@@ -7,6 +7,16 @@ const nextConfig = {
         hostname: "*.supabase.co",
         pathname: "**",
       },
+      {
+        protocol: "https",
+        hostname: "community.akamai.steamstatic.com",
+        pathname: "**",
+      },
+      {
+        protocol: "https",
+        hostname: "community.cloudflare.steamstatic.com",
+        pathname: "**",
+      },
     ],
   },
 };

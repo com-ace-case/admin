@@ -1,8 +1,8 @@
 import { HydrationBoundary, QueryClient, dehydrate } from "@tanstack/react-query";
 
-import { getCases } from "@/services/database";
 import { CaseTable } from "@/components/CaseTable";
 import { dbServerClient } from "@/lib/database/server";
+import { getCases } from "@/services/database/getCases";
 
 const HomePage = async () => {
   const queryClient = new QueryClient();

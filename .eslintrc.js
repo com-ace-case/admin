@@ -26,10 +26,28 @@ module.exports = {
         prev: ["multiline-block-like", "multiline-expression", "multiline-const", "multiline-let"],
       },
     ],
+    "no-restricted-imports": [
+      "error",
+      {
+        paths: [
+          {
+            name: "@mui/icons-material",
+            message: "Barrel imports are not allowed. Use named imports instead",
+          },
+          {
+            name: "@mui/material",
+            message: "Barrel imports are not allowed. Use named imports instead",
+          },
+        ],
+      },
+    ],
 
     // --- typescript-eslint ---
     "@typescript-eslint/consistent-type-imports": "error",
-    "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
+    ],
 
     // --- unicorn ---
     "unicorn/no-null": "off",

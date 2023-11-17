@@ -1,10 +1,16 @@
-import type { Tables } from "@/types/database";
+import type { DbClient } from "@/types/database";
+import type { CreateCaseSchema } from "@/lib/schemas/case";
 
-type Case = Tables<"case">;
+import { uploadImage } from "../database/uploadImage";
 
-export const createCase = (variables: Pick<Case, "image" | "label">) => {
+export const createCase = (client: DbClient) => async (variables: CreateCaseSchema) => {
+  const fileName = await uploadImage(client)(variables.image);
+
   return fetch("/api/cases", {
     method: "POST",
-    body: JSON.stringify(variables),
+    body: JSON.stringify({
+      image: fileName,
+      label: variables.label,
+    }),
   });
 };
